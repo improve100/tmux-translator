@@ -153,6 +153,7 @@ class BasicTranslator(object):
             return False
         for section in ('default', name):
             items = config.get(section, {})
+            # print(items)
             for key in items:
                 self._config[key] = items[key]
         return True
@@ -426,8 +427,16 @@ class YoudaoTranslator (BasicTranslator):
         self.url = 'https://openapi.youdao.com/api'
         # self.D = "ebSeFb%=XZ%T[KZ)c(sy!"
         # self.D = "97_3(jkMYg@T[KZQmqjTK"
-        self.app_id = "7ef8a8eb0c08a737"
-        self.D = "WBTRKPsT7qssAI8WM7zonmVy3Rp7NQ8x"
+        if 'app_id' not in self._config:
+            sys.stderr.write('error: missing apikey in [youdao] section\n')
+            sys.exit()
+        if 'd' not in self._config:
+            sys.stderr.write('error: missing secret in [youdao] section\n')
+            sys.exit()
+        self.app_id = self._config['app_id']
+        self.D = self._config['d']
+        # self.app_id = "7ef8a8eb0c08a737"
+        # self.D = "WBTRKPsT7qssAI8WM7zonmVy3Rp7NQ8x"
 
     def get_md5 (self, value):
         import hashlib
@@ -667,6 +676,8 @@ class CibaTranslator (BasicTranslator):
         super(CibaTranslator, self).__init__('ciba', **argv)
 
     def translate (self, sl, tl, text):
+        if " " in text:
+            return None
         sl, tl = self.guess_language(sl, tl, text)
         # url = 'https://fy.iciba.com/ajax.php'
         url = 'https://dict-mobile.iciba.com/interface/index.php'
@@ -698,10 +709,14 @@ class CibaTranslator (BasicTranslator):
                 # res['definition'] = resp['message'][0]['key'] or ''
             # if 'ph_en' in resp['message']:
                 # res['phonetic'] = resp['message']['ph_en'] or ''
+            if len(resp['message']) == 0:
+                return None
             if 'definition' in resp['message'][0]:
                 res['definition'] = resp['message'][0]['paraphrase'] or ''
             if 'means' in resp['message'][0]:
                 res['explain'] = resp['message'][0]['means'][0]['means'] or ''
+                # print(",".join(resp['message'][0]['means'][0]['means']))
+                # res['explain'] = ",".join(resp['message'][0]['means'][0]['means'])
         return res
 
 
@@ -792,7 +807,7 @@ def main(argv = None):
             print(res['definition'])
     if 'explain' in res:
         if res['explain']:
-            print('\n'.join(res['explain']))
+            print(','.join(res['explain']))
     elif 'translation' in res:
         if res['translation']:
             print(res['translation'])
