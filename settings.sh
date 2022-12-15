@@ -13,7 +13,7 @@ from="@tmux-translator-from"
 default_to="zh"
 to="@tmux-translator-to"
 
-default_engine="google"
+default_engine="baidu|youdao|ciba"
 engine="@tmux-translator-engine"
 
 get_tmux_option() {
