@@ -55,6 +55,7 @@ while IFS= read -r line; do
     # echo "$ver"
     if [ "$ver" = "16.04" ];then
         result="${result}echo ---$line---; tmux save-buffer - | xargs -I{} ~/.pyenv/versions/3.8.5/bin/python $CURRENT_DIR/engine/translator.py --engine=$line --from=$(get_from) --to=$(get_to) {}; echo ''; "
+    # ubuntu2004
     else
         result="${result}echo ---$line---; tmux save-buffer - | xargs -I{} python $CURRENT_DIR/engine/translator.py --engine=$line --from=$(get_from) --to=$(get_to) {}; echo ''; "
     fi
