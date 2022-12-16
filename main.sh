@@ -51,7 +51,13 @@ get_engine() {
 
 vars=$(echo "$(get_engine)" | sed "s/|/\n/g")
 while IFS= read -r line; do
-    result="${result}echo ---$line---; tmux save-buffer - | xargs -I{} python $CURRENT_DIR/engine/translator.py --engine=$line --from=$(get_from) --to=$(get_to) {}; echo ''; "
+    ver=`grep -oP 'VERSION_ID="\K[\d.]+' /etc/os-release`
+    # echo "$ver"
+    if [ "$ver" = "16.04" ];then
+        result="${result}echo ---$line---; tmux save-buffer - | xargs -I{} ~/.pyenv/versions/3.8.5/bin/python $CURRENT_DIR/engine/translator.py --engine=$line --from=$(get_from) --to=$(get_to) {}; echo ''; "
+    else
+        result="${result}echo ---$line---; tmux save-buffer - | xargs -I{} python $CURRENT_DIR/engine/translator.py --engine=$line --from=$(get_from) --to=$(get_to) {}; echo ''; "
+    fi
 done <<< "$vars"
 #result="${result}read -r"
 result="${result}"
